@@ -2,31 +2,37 @@ package vista;
 
 import javax.swing.*;
 import java.awt.*;
+import modelo.AnalizadorLexico;
 
-public class InterfazGrafica extends JFrame {
-    private JTextArea areaCodigo;
+public class Interfaz extends JFrame {
+    private JTextArea codigoFuente;
     private JButton analizarBtn;
+    private AnalizadorLexico analizador;
 
-    public InterfazGrafica() {
-        setTitle("Compilador - Analizador Léxico");
+    public Interfaz() {
+        setTitle("Analizador Léxico");
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        areaCodigo = new JTextArea();
-        add(new JScrollPane(areaCodigo), BorderLayout.CENTER);
-
+        codigoFuente = new JTextArea();
         analizarBtn = new JButton("Analizar Código");
+
+        add(new JScrollPane(codigoFuente), BorderLayout.CENTER);
         add(analizarBtn, BorderLayout.SOUTH);
+
+        analizador = new AnalizadorLexico();
+
+        analizarBtn.addActionListener(e -> {
+            String codigo = codigoFuente.getText();
+            analizador.analizarCodigo(codigo);
+        });
 
         setVisible(true);
     }
 
-    public JTextArea getAreaCodigo() {
-        return areaCodigo;
-    }
-
-    public JButton getAnalizarBtn() {
-        return analizarBtn;
+    public static void main(String[] args) {
+        new Interfaz();
     }
 }
+
