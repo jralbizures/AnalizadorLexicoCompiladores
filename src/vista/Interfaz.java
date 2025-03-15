@@ -8,24 +8,39 @@ import modelo.Token;
 
 public class Interfaz extends JFrame {
     private JTextArea codigoFuente;
-    private JTextArea salidaTokens;
+    private JTextArea tokensArea, tablaSimbolosArea, erroresArea;
     private JButton analizarBtn;
     private AnalizadorLexico analizador;
 
     public Interfaz() {
         setTitle("Analizador Léxico");
-        setSize(800, 500);
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Panel superior: Código fuente
+        JPanel panelSuperior = new JPanel(new BorderLayout());
+        panelSuperior.setBorder(BorderFactory.createTitledBorder("Código Fuente"));
         codigoFuente = new JTextArea(10, 50);
-        add(new JScrollPane(codigoFuente), BorderLayout.NORTH);
+        panelSuperior.add(new JScrollPane(codigoFuente), BorderLayout.CENTER);
+        add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel central: Salida de tokens
-        salidaTokens = new JTextArea(10, 50);
-        salidaTokens.setEditable(false);
-        add(new JScrollPane(salidaTokens), BorderLayout.CENTER);
+        // Crear pestañas para mostrar los reportes
+        JTabbedPane tabbedPane = new JTabbedPane();
+
+        tokensArea = new JTextArea();
+        tokensArea.setEditable(false);
+        tabbedPane.addTab("Tokens", new JScrollPane(tokensArea));
+
+        tablaSimbolosArea = new JTextArea();
+        tablaSimbolosArea.setEditable(false);
+        tabbedPane.addTab("Tabla de Símbolos", new JScrollPane(tablaSimbolosArea));
+
+        erroresArea = new JTextArea();
+        erroresArea.setEditable(false);
+        tabbedPane.addTab("Errores Léxicos", new JScrollPane(erroresArea));
+
+        add(tabbedPane, BorderLayout.CENTER);
 
         // Botón de análisis
         analizarBtn = new JButton("Analizar Código");
@@ -42,25 +57,37 @@ public class Interfaz extends JFrame {
     private void analizarCodigo() {
         String codigo = codigoFuente.getText();
         analizador.analizarCodigo(codigo);
-        
-        // Mostrar tokens y errores
-        StringBuilder salida = new StringBuilder("Tokens encontrados:\n");
-        for (Token token : analizador.getTokens()) {
-            salida.append(token).append("\n");
-        }
 
-        if (!analizador.getErrores().isEmpty()) {
-            salida.append("\nErrores léxicos:\n");
-            for (String error : analizador.getErrores()) {
-                salida.append(error).append("\n");
+        // Mostrar tokens en la pestaña "Tokens"
+        StringBuilder tokensTexto = new StringBuilder("Lista de Tokens:\n");
+        for (Token token : analizador.getTokens()) {
+            tokensTexto.append(token).append("\n");
+        }
+        tokensArea.setText(tokensTexto.toString());
+
+        // Mostrar tabla de símbolos en la pestaña "Tabla de Símbolos"
+        StringBuilder tablaTexto = new StringBuilder("Tabla de Símbolos:\n");
+        tablaTexto.append("Identificador | Tipo de Token\n");
+        for (Token token : analizador.getTokens()) {
+            if (token.getTipo().equals("Identificador")) {
+                tablaTexto.append(token.getValor()).append(" | ").append(token.getTipo()).append("\n");
             }
         }
+        tablaSimbolosArea.setText(tablaTexto.toString());
 
-        salidaTokens.setText(salida.toString());
+        // Mostrar errores en la pestaña "Errores Léxicos"
+        StringBuilder erroresTexto = new StringBuilder("Errores Léxicos:\n");
+        for (String error : analizador.getErrores()) {
+            erroresTexto.append(error).append("\n");
+        }
+        erroresArea.setText(erroresTexto.toString());
+
+        if (analizador.getErrores().isEmpty()) {
+            erroresArea.setText("No se encontraron errores léxicos.");
+        }
     }
 
     public static void main(String[] args) {
         new Interfaz();
     }
 }
-
