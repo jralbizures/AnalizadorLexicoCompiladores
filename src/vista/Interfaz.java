@@ -2,14 +2,14 @@ package vista;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+//import java.util.ArrayList;
 import modelo.AnalizadorLexico;
 import modelo.Token;
 
 public class Interfaz extends JFrame {
     private JTextArea codigoFuente;
     private JTextArea tokensArea, tablaSimbolosArea, erroresArea;
-    private JButton analizarBtn;
+    private JButton analizarBtn, limpiarBtn;
     private AnalizadorLexico analizador;
 
     public Interfaz() {
@@ -25,7 +25,7 @@ public class Interfaz extends JFrame {
         panelSuperior.add(new JScrollPane(codigoFuente), BorderLayout.CENTER);
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Crear pestañas para mostrar los reportes
+        // Crear pestañas para mostrar reportes
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tokensArea = new JTextArea();
@@ -42,14 +42,19 @@ public class Interfaz extends JFrame {
 
         add(tabbedPane, BorderLayout.CENTER);
 
-        // Botón de análisis
+        // Panel de botones
+        JPanel panelBotones = new JPanel();
         analizarBtn = new JButton("Analizar Código");
-        add(analizarBtn, BorderLayout.SOUTH);
+        limpiarBtn = new JButton("Limpiar");
+        panelBotones.add(analizarBtn);
+        panelBotones.add(limpiarBtn);
+        add(panelBotones, BorderLayout.SOUTH);
 
         // Inicializar analizador
         analizador = new AnalizadorLexico();
 
         analizarBtn.addActionListener(e -> analizarCodigo());
+        limpiarBtn.addActionListener(e -> limpiarCampos());
 
         setVisible(true);
     }
@@ -85,6 +90,13 @@ public class Interfaz extends JFrame {
         if (analizador.getErrores().isEmpty()) {
             erroresArea.setText("No se encontraron errores léxicos.");
         }
+    }
+
+    private void limpiarCampos() {
+        codigoFuente.setText("");
+        tokensArea.setText("");
+        tablaSimbolosArea.setText("");
+        erroresArea.setText("");
     }
 
     public static void main(String[] args) {
